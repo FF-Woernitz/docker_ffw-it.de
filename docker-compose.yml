@@ -1,0 +1,36 @@
+version: "2"
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    image: image-build/nginx
+    volumes:
+      - letsencrypt_certs:/etc/letsencrypt:ro
+      - certbot_acme_challenge:/var/www/certbot:ro
+      - ./nginx-config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx-config/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx-config/includes:/etc/nginx/includes:ro
+      - ./html:/var/www/html
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+
+  certbot:
+    container_name: certbot
+    build: ./certbot
+    image: image-build/certbot
+    env_file:
+      - ./certbot-config.env
+    environment:
+      COMPOSE_PROJECT_NAME: "${COMPOSE_PROJECT_NAME}"
+    volumes:
+      - letsencrypt_certs:/etc/letsencrypt
+      - certbot_acme_challenge:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/workdir:ro
+
+volumes:
+  letsencrypt_certs:
+  certbot_acme_challenge:
