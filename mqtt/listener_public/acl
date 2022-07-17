@@ -1,0 +1,6 @@
+user tobsa
+topic read $SYS/#
+topic readwrite ils/#
+
+user ils-ansbach
+topic write ils/ansbach/#

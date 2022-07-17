@@ -55,6 +55,4 @@ if [ -f "/tmp/CERTBOT_RELOAD" ]; then
   rm /tmp/CERTBOT_RELOAD
 fi
 
-/etc/periodic/daily/renew_certs
-
 /usr/sbin/crond -f -l 4
