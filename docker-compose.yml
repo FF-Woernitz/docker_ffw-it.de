@@ -31,8 +31,7 @@ services:
 
   npm:
     container_name: npm
-    build: ./npm
-    image: image-build/npm
+    image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
     networks:
       - backend
@@ -74,19 +73,18 @@ services:
 
   mqtt:
     container_name: mqtt
-    entrypoint: sleep 600
-    image: eclipse-mosquitto
+    build: ./mqtt
+    image: image-build/mqtt
     restart: unless-stopped
     networks:
       - backend
     ports:
       - "8883:8883"
     volumes:
-      - ./mqtt:/mosquitto/config
+      - ./mqtt-config:/mosquitto/config
       - mqtt_data:/mosquitto/data
       - npm_letsencrypt:/etc/letsencrypt:ro
       - /etc/localtime:/etc/localtime:ro
-    user: mosquitto
 
   node-red:
     container_name: node-red

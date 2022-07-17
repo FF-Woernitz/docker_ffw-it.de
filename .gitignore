@@ -1,5 +1,5 @@
 .idea
 .iml
 certbot-config.env
-/mqtt/listener_public/passwd
+/mqtt-config/listener_public/passwd
 backups/*.backup
