@@ -1,4 +1,7 @@
 FROM nodered/node-red
 RUN npm install \
     node-red-contrib-actionflows \
-    node-red-contrib-pushover
+    node-red-contrib-pushover \
+    node-red-contrib-home-assistant-websocket \
+    node-red-contrib-stoptimer \
+    node-red-contrib-time-range-switch
