@@ -1,6 +1,13 @@
 user tobsa
 topic read $SYS/#
-topic readwrite ils/#
+topic read ils/#
+topic readwrite ffw/woe/#
 
 user ils-ansbach
 topic write ils/ansbach/#
+
+user ffw-woe-iot
+topic read ffw/woe/iot/#
+
+user ffw-woe-monitor
+topic read ffw/woe/monitor/#
