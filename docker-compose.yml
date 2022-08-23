@@ -80,6 +80,7 @@ services:
       - backend
     ports:
       - "8883:8883"
+      - "8884:8884"
     volumes:
       - ./mqtt-config:/mosquitto/config
       - mqtt_data:/mosquitto/data
