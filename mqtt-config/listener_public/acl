@@ -11,3 +11,6 @@ topic read ffw/woe/iot/#
 
 user ffw-woe-monitor
 topic read ffw/woe/monitor/#
+
+user tobsa-iot
+topic read iot-home/tobsa-iot/#
