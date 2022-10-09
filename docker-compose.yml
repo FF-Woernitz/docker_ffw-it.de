@@ -60,7 +60,6 @@ services:
   cert-watch:
     container_name: cert-watch
     build: ./cert-watch
-    image: image-build/cert-watch
     restart: unless-stopped
     networks:
       - backend
@@ -75,7 +74,6 @@ services:
   mqtt:
     container_name: mqtt
     build: ./mqtt
-    image: image-build/mqtt
     restart: unless-stopped
     networks:
       - backend
