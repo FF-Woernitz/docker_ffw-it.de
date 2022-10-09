@@ -25,9 +25,9 @@ services:
       - backend
     environment:
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+      TZ: Europe/Berlin
     volumes:
       - "mariadb:/var/lib/mysql"
-      - "/etc/localtime:/etc/localtime:ro"
 
   npm:
     container_name: npm
@@ -50,10 +50,10 @@ services:
       DB_MYSQL_PASSWORD: "npm"
       DB_MYSQL_NAME: "npm"
       DISABLE_IPV6: 'true'
+      TZ: Europe/Berlin
     volumes:
       - npm_data:/data
       - npm_letsencrypt:/etc/letsencrypt
-      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - db
 
@@ -66,6 +66,7 @@ services:
       - backend
     environment:
       COMPOSE_PROJECT_NAME: "${COMPOSE_PROJECT_NAME}"
+      TZ: Europe/Berlin
     volumes:
       - npm_letsencrypt:/etc/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
@@ -78,6 +79,8 @@ services:
     restart: unless-stopped
     networks:
       - backend
+    environment:
+      TZ: Europe/Berlin
     ports:
       - "8883:8883"
       - "8884:8884"
@@ -85,18 +88,18 @@ services:
       - ./mqtt-config:/mosquitto/config
       - mqtt_data:/mosquitto/data
       - npm_letsencrypt:/etc/letsencrypt:ro
-      - /etc/localtime:/etc/localtime:ro
 
   node-red:
     container_name: node-red
-    build: ./node-red
-    image: image-build/node-red
+    image: nodered/node-red
     restart: unless-stopped
     networks:
       - backend
+    environment:
+      NODE_RED_ENABLE_PROJECTS: true
+      TZ: Europe/Berlin
     volumes:
       - node-red_data:/data
-      - /etc/localtime:/etc/localtime:ro
     user: node-red
 
 ######### Not in use yet
@@ -106,8 +109,9 @@ services:
 #    restart: unless-stopped
 #    networks:
 #      - backend
+#    environment:
+#      TZ: Europe/Berlin
 #    volumes:
 #      - "/opt/www-public:/var/www/html/"
-#      - "/etc/localtime:/etc/localtime:ro"
 #    depends_on:
 #      - db
