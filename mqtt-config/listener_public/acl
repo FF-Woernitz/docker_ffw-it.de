@@ -15,6 +15,7 @@ topic read iot-home/tobsa-iot/#
 user ffw-woe-monitor-1
 topic read ffw/woe/monitor/1/data
 topic write ffw/woe/monitor/1/heartbeat
+topic write ffw/woe/monitor/1/status
 
 user ffw-woe-monitor-1-web
 topic read ffw/woe/monitor/1-web/data
@@ -23,3 +24,4 @@ topic write ffw/woe/monitor/1-web/heartbeat
 user ffw-woe-monitor-2
 topic read ffw/woe/monitor/2/data
 topic write ffw/woe/monitor/2/heartbeat
+topic write ffw/woe/monitor/2/status
