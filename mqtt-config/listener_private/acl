@@ -1,0 +1,4 @@
+user zabbix
+topic read ffw/woe/monitor/1/heartbeat
+topic read ffw/woe/monitor/1-web/heartbeat
+topic read ffw/woe/monitor/2/heartbeat

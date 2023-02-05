@@ -80,6 +80,7 @@ services:
     environment:
       TZ: Europe/Berlin
     ports:
+      - "10.14.0.5:1884:1884"
       - "8883:8883"
       - "8884:8884"
     volumes:
