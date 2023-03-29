@@ -1,6 +1,5 @@
 user tobsa
-topic read $SYS/#
-topic read ils/#
+topic read #
 topic readwrite ffw/woe/#
 
 user ils-ansbach
