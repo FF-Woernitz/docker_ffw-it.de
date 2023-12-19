@@ -1,5 +1,9 @@
 user zabbix
 topic read ffw/woe/monitor/1/heartbeat
 topic read ffw/woe/monitor/1-web/heartbeat
-topic read ffw/woe/monitor/2/heartbeat
 topic read ffw/server/heartbeat
+
+user ffw-woe-tts
+topic read ffw/woe/tts/#
+topic write ffw/woe/tts/status
+topic write ffw/woe/tts/heartbeat

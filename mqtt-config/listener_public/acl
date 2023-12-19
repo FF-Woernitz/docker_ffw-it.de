@@ -21,6 +21,4 @@ topic read ffw/woe/monitor/1-web/#
 topic write ffw/woe/monitor/1-web/heartbeat
 
 user ffw-woe-monitor-2
-topic read ffw/woe/monitor/2/#
-topic write ffw/woe/monitor/2/heartbeat
-topic write ffw/woe/monitor/2/status
+topic readwrite ffw/woe/monitor/2/#
