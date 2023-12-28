@@ -1,6 +1,5 @@
 user tobsa
-topic read #
-topic readwrite ffw/woe/#
+topic readwrite #
 
 user ils-ansbach
 topic write ils/ansbach/#
@@ -10,6 +9,9 @@ topic read ffw/woe/iot/#
 
 user tobsa-iot
 topic read iot-home/tobsa-iot/#
+
+user philipp-iot
+topic read iot-home/philipp-iot/#
 
 user ffw-woe-monitor-1
 topic read ffw/woe/monitor/1/#
