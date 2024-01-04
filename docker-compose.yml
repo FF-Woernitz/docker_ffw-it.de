@@ -57,7 +57,7 @@ services:
       TZ: Europe/Berlin
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pma.rule=Host(`pmw.ffw-it.de`)"
+      - "traefik.http.routers.pma.rule=Host(`pma.ffw-it.de`)"
       - "traefik.http.routers.pma.entrypoints=websecure"
       - "traefik.http.routers.pma.middlewares=vpn-whitelist@file"
       - "traefik.http.routers.pma.tls=true"
