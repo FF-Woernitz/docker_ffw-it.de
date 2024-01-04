@@ -1,0 +1,8 @@
+http:
+  routers:
+    router-dashboard-ssl:
+      rule: "Host(`traefik.ffw-it.de`)"
+      entrypoints: websecure
+      middlewares: vpn-whitelist@file
+      tls: true
+      service: "api@internal"
