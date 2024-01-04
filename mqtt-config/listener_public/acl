@@ -8,7 +8,7 @@ user ffw-woe-iot
 topic read ffw/woe/iot/#
 
 user tobsa-iot
-topic read iot-home/tobsa-iot/#
+topic readwrite iot-home/tobsa-iot/#
 
 user philipp-iot
 topic read iot-home/philipp-iot/#
