@@ -1,0 +1,12 @@
+http:
+  middlewares:
+    redirect-homepage:
+      redirectRegex:
+        regex: "(.)*"
+        replacement: "https://ff-woernitz.de"
+  routers:
+    router-iot:
+      rule: "Host(`ffw-it.de`)"
+      entrypoints: websecure
+      middlewares: redirect-homepage@file
+      tls: true
