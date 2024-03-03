@@ -24,3 +24,12 @@ topic write ffw/woe/monitor/1-web/heartbeat
 
 user ffw-woe-monitor-2
 topic readwrite ffw/woe/monitor/2/#
+
+user ffw-woe-monitor-3
+topic read ffw/woe/monitor/3/#
+topic write ffw/woe/monitor/3/heartbeat
+topic write ffw/woe/monitor/3/status
+
+user ffw-woe-monitor-3-web
+topic read ffw/woe/monitor/3-web/#
+topic write ffw/woe/monitor/3-web/heartbeat
