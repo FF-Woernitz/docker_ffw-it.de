@@ -101,6 +101,15 @@ services:
       - node-red_data:/data
     user: node-red
 
+  nextcloud_divera_bridge:
+    container_name: nextcloud_divera_bridge
+    image: ghcr.io/ff-woernitz/nextcloud_divera_bridge:master
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+
 ######### Not in use yet
 #  web-public:
 #    container_name: web-public
