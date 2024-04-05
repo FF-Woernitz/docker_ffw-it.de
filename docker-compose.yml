@@ -110,6 +110,17 @@ services:
     environment:
       TZ: Europe/Berlin
 
+  collabora:
+    container_name: collabora
+    image: collabora/code
+    environment:
+      - domain=cloud.ffw-it.de
+      - "extra_params=--o:ssl.enable=false --o:ssl.termination=true"
+      - TZ=Europe/Berlin
+    restart: unless-stopped
+    networks:
+      - backend
+
 ######### Not in use yet
 #  web-public:
 #    container_name: web-public
