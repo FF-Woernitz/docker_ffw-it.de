@@ -129,6 +129,13 @@ services:
     restart: unless-stopped
     networks:
       - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.node-red.rule=Host(`flow.ffw-it.de`)"
+      - "traefik.http.routers.node-red.entrypoints=websecure"
+      - "traefik.http.routers.node-red.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.node-red.tls=true"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
 
 ######### Not in use yet
 #  web-public:
