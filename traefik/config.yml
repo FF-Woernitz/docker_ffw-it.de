@@ -1,5 +1,6 @@
 log:
   level: WARN
+accessLog: {}
 
 global:
   checkNewVersion: true
@@ -33,10 +34,10 @@ entryPoints:
     http:
       tls: true
 
-  mqtt:
+  mqtt-public:
     address: :8883
 
-  mqtt-ws:
+  mqtt-public-ws:
     address: :8884
 
 

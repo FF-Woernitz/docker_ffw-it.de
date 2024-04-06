@@ -25,6 +25,9 @@ services:
       - '80:80'
       # Public HTTPS Port:
       - '443:443'
+      # MQTT
+      - '8883:8883'
+      - '8884:8884'
     environment:
       - HETZNER_API_KEY=${HETZNER_API_KEY}
       - TZ=Europe/Berlin
@@ -35,6 +38,7 @@ services:
       - "./traefik/config.yml:/etc/traefik/traefik.yml:ro"
       - "./traefik/dynamic:/etc/traefik/dynamic:ro"
       - "traefik-certs-data:/etc/traefik/certs"
+      - "./traefik/authorized-users:/authorized-users:ro"
 
   db:
     container_name: db
@@ -57,14 +61,15 @@ services:
       TZ: Europe/Berlin
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pma.rule=Host(`pma.ffw-it.de`)"
+      - "traefik.http.routers.pma.rule=Host(`pma.vpn.ffw-it.de`)"
       - "traefik.http.routers.pma.entrypoints=websecure"
       - "traefik.http.routers.pma.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.pma.middlewares=authorized-users@file"
       - "traefik.http.routers.pma.tls=true"
 
   mqtt:
     container_name: mqtt
-    build: ./mqtt
+    image: eclipse-mosquitto:latest
     restart: unless-stopped
     networks:
       - backend
@@ -78,17 +83,17 @@ services:
     labels:
       - "traefik.enable=true"
 
-      - "traefik.tcp.routers.mqtt.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.mqtt.entrypoints=mqtt"
-      - "traefik.tcp.routers.mqtt.tls=true"
-      - "traefik.tcp.routers.mqtt.service=mqtt"
-      - "traefik.tcp.services.mqtt.loadbalancer.server.port=8883"
+      - "traefik.tcp.routers.mqtt-public.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mqtt-public.entrypoints=mqtt-public"
+      - "traefik.tcp.routers.mqtt-public.tls=true"
+      - "traefik.tcp.routers.mqtt-public.service=mqtt-public"
+      - "traefik.tcp.services.mqtt-public.loadbalancer.server.port=8883"
 
-      - "traefik.tcp.routers.mqtt-ws.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.mqtt-ws.entrypoints=mqtt-ws"
-      - "traefik.tcp.routers.mqtt-ws.tls=true"
-      - "traefik.tcp.routers.mqtt-ws.service=mqtt"
-      - "traefik.tcp.services.mqtt-ws.loadbalancer.server.port=8884"
+      - "traefik.tcp.routers.mqtt-public-ws.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mqtt-public-ws.entrypoints=mqtt-public-ws"
+      - "traefik.tcp.routers.mqtt-public-ws.tls=true"
+      - "traefik.tcp.routers.mqtt-public-ws.service=mqtt-public-ws"
+      - "traefik.tcp.services.mqtt-public-ws.loadbalancer.server.port=8884"
 
   node-red:
     container_name: node-red
@@ -104,9 +109,10 @@ services:
     user: node-red
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.node-red.rule=Host(`flow.ffw-it.de`)"
+      - "traefik.http.routers.node-red.rule=Host(`flow.ffw-it.de`) || Host(`flow.vpn.ffw-it.de`)"
       - "traefik.http.routers.node-red.entrypoints=websecure"
       - "traefik.http.routers.node-red.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.node-red.middlewares=authorized-users@file"
       - "traefik.http.routers.node-red.tls=true"
       - "traefik.http.services.node-red.loadbalancer.server.port=1880"
 
@@ -118,6 +124,12 @@ services:
       - backend
     environment:
       TZ: Europe/Berlin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nc-divera-bridge.rule=Host(`nc-divera-bridge.ffw-it.de`)"
+      - "traefik.http.routers.nc-divera-bridge.entrypoints=websecure"
+      - "traefik.http.routers.nc-divera-bridge.tls=true"
+      - "traefik.http.services.nc-divera-bridge.loadbalancer.server.port=80"
 
   collabora:
     container_name: collabora
@@ -131,11 +143,10 @@ services:
       - backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.node-red.rule=Host(`flow.ffw-it.de`)"
-      - "traefik.http.routers.node-red.entrypoints=websecure"
-      - "traefik.http.routers.node-red.middlewares=vpn-whitelist@file"
-      - "traefik.http.routers.node-red.tls=true"
-      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
+      - "traefik.http.routers.collabora.rule=Host(`collabora.ffw-it.de`)"
+      - "traefik.http.routers.collabora.entrypoints=websecure"
+      - "traefik.http.routers.collabora.tls=true"
+      - "traefik.http.services.collabora.loadbalancer.server.port=80"
 
 ######### Not in use yet
 #  web-public:

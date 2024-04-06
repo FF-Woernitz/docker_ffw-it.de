@@ -7,3 +7,4 @@ tls:
           main: ffw-it.de
           sans:
             - "*.ffw-it.de"
+            - "*.vpn.ffw-it.de"
