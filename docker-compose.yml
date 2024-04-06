@@ -67,6 +67,8 @@ services:
     container_name: phpmyadmin
     image: phpmyadmin:latest
     restart: unless-stopped
+    networks:
+      - backend
     environment:
       PMA_HOST: db
       TZ: Europe/Berlin
@@ -157,7 +159,7 @@ services:
       - "traefik.http.routers.collabora.rule=Host(`collabora.ffw-it.de`)"
       - "traefik.http.routers.collabora.entrypoints=websecure"
       - "traefik.http.routers.collabora.tls=true"
-      - "traefik.http.services.collabora.loadbalancer.server.port=80"
+      - "traefik.http.services.collabora.loadbalancer.server.port=9980"
 
 ######### Not in use yet
 #  web-public:
