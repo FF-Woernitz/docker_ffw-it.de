@@ -1,5 +1,9 @@
 .idea
 .iml
-certbot-config.env
+
+/.env
+
 /mqtt-config/listener_*/passwd
+/traefik/authorized-users
+
 backups/*.backup

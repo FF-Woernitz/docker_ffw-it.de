@@ -11,12 +11,35 @@ networks:
 
 volumes:
   mariadb:
-  npm_data:
-  npm_letsencrypt:
+  traefik-certs-data:
   mqtt_data:
   node-red_data:
 
 services:
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: unless-stopped
+    ports:
+      # Public HTTP Port:
+      - '80:80'
+      # Public HTTPS Port:
+      - '443:443'
+      # MQTT
+      - '8883:8883'
+      - '8884:8884'
+    environment:
+      - HETZNER_API_KEY=${HETZNER_API_KEY}
+      - TZ=Europe/Berlin
+    networks:
+      - backend
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik/config.yml:/etc/traefik/traefik.yml:ro"
+      - "./traefik/dynamic:/etc/traefik/dynamic:ro"
+      - "traefik-certs-data:/etc/traefik/certs"
+      - "./traefik/authorized-users:/authorized-users:ro"
+
   db:
     container_name: db
     image: 'mariadb:10'
@@ -29,51 +52,24 @@ services:
     volumes:
       - "mariadb:/var/lib/mysql"
 
-  npm:
-    container_name: npm
-    image: jc21/nginx-proxy-manager:latest
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
     restart: unless-stopped
-    networks:
-      - backend
-    ports:
-      # Public HTTP Port:
-      - '80:80'
-      # Public HTTPS Port:
-      - '443:443'
-      # Admin Web Port (accessible via NPM #loop):
-      #- '81:81'
-      # Add any other Stream port you want to expose
     environment:
-      DB_MYSQL_HOST: "db"
-      DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: "npm"
-      DB_MYSQL_PASSWORD: "npm"
-      DB_MYSQL_NAME: "npm"
-      DISABLE_IPV6: 'true'
+      PMA_HOST: db
       TZ: Europe/Berlin
-    volumes:
-      - npm_data:/data
-      - npm_letsencrypt:/etc/letsencrypt
-    depends_on:
-      - db
-
-  cert-watch:
-    container_name: cert-watch
-    build: ./cert-watch
-    restart: unless-stopped
-    networks:
-      - backend
-    environment:
-      COMPOSE_PROJECT_NAME: "${COMPOSE_PROJECT_NAME}"
-      TZ: Europe/Berlin
-    volumes:
-      - npm_letsencrypt:/etc/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./:/workdir:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pma.rule=Host(`pma.vpn.ffw-it.de`)"
+      - "traefik.http.routers.pma.entrypoints=websecure"
+      - "traefik.http.routers.pma.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.pma.middlewares=authorized-users@file"
+      - "traefik.http.routers.pma.tls=true"
 
   mqtt:
     container_name: mqtt
-    build: ./mqtt
+    image: eclipse-mosquitto:latest
     restart: unless-stopped
     networks:
       - backend
@@ -81,12 +77,23 @@ services:
       TZ: Europe/Berlin
     ports:
       - "10.14.0.5:1884:1884"
-      - "8883:8883"
-      - "8884:8884"
     volumes:
       - ./mqtt-config:/mosquitto/config
       - mqtt_data:/mosquitto/data
-      - npm_letsencrypt:/etc/letsencrypt:ro
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.tcp.routers.mqtt-public.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mqtt-public.entrypoints=mqtt-public"
+      - "traefik.tcp.routers.mqtt-public.tls=true"
+      - "traefik.tcp.routers.mqtt-public.service=mqtt-public"
+      - "traefik.tcp.services.mqtt-public.loadbalancer.server.port=8883"
+
+      - "traefik.tcp.routers.mqtt-public-ws.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mqtt-public-ws.entrypoints=mqtt-public-ws"
+      - "traefik.tcp.routers.mqtt-public-ws.tls=true"
+      - "traefik.tcp.routers.mqtt-public-ws.service=mqtt-public-ws"
+      - "traefik.tcp.services.mqtt-public-ws.loadbalancer.server.port=8884"
 
   node-red:
     container_name: node-red
@@ -100,6 +107,14 @@ services:
     volumes:
       - node-red_data:/data
     user: node-red
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.node-red.rule=Host(`flow.ffw-it.de`) || Host(`flow.vpn.ffw-it.de`)"
+      - "traefik.http.routers.node-red.entrypoints=websecure"
+      - "traefik.http.routers.node-red.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.node-red.middlewares=authorized-users@file"
+      - "traefik.http.routers.node-red.tls=true"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
 
   nextcloud_divera_bridge:
     container_name: nextcloud_divera_bridge
@@ -109,6 +124,12 @@ services:
       - backend
     environment:
       TZ: Europe/Berlin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nc-divera-bridge.rule=Host(`nc-divera-bridge.ffw-it.de`)"
+      - "traefik.http.routers.nc-divera-bridge.entrypoints=websecure"
+      - "traefik.http.routers.nc-divera-bridge.tls=true"
+      - "traefik.http.services.nc-divera-bridge.loadbalancer.server.port=80"
 
   collabora:
     container_name: collabora
@@ -120,6 +141,12 @@ services:
     restart: unless-stopped
     networks:
       - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.collabora.rule=Host(`collabora.ffw-it.de`)"
+      - "traefik.http.routers.collabora.entrypoints=websecure"
+      - "traefik.http.routers.collabora.tls=true"
+      - "traefik.http.services.collabora.loadbalancer.server.port=80"
 
 ######### Not in use yet
 #  web-public:
