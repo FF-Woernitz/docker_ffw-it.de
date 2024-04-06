@@ -40,6 +40,17 @@ services:
       - "traefik-certs-data:/etc/traefik/certs"
       - "./traefik/authorized-users:/authorized-users:ro"
 
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      - WATCHTOWER_MONITOR_ONLY=true
+      - WATCHTOWER_NOTIFICATION_URL=${WATCHTOWER_NOTIFICATION_URL}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
   db:
     container_name: db
     image: 'mariadb:10'
