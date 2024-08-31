@@ -5,8 +5,14 @@ http:
         regex: "(.)*"
         replacement: "https://ff-woernitz.de"
   routers:
-    router-homepage:
+    router-homepage-1:
       rule: "Host(`ffw-it.de`)"
+      entrypoints: websecure
+      middlewares: redirect-homepage@file
+      tls: true
+      service: "noop@internal"
+    router-homepage-2:
+      rule: "Host(`xn--ff-wrnitz-37a.de`) || Host(`*.xn--ff-wrnitz-37a.de`)"
       entrypoints: websecure
       middlewares: redirect-homepage@file
       tls: true

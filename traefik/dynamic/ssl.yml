@@ -8,3 +8,5 @@ tls:
           sans:
             - "*.ffw-it.de"
             - "*.vpn.ffw-it.de"
+            - "xn--ff-wrnitz-37a.de"
+            - "*.xn--ff-wrnitz-37a.de"
