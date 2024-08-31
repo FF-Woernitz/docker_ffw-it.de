@@ -6,6 +6,9 @@ topic read ffw/woe/monitor/3-web/heartbeat
 topic read ffw/server/heartbeat
 
 user ffw-woe-tts
-topic read ffw/woe/tts/#
-topic write ffw/woe/tts/status
-topic write ffw/woe/tts/heartbeat
+topic read ffw/woe/tts/radio/#
+topic write ffw/woe/tts/radio/status
+topic write ffw/woe/tts/radio/heartbeat
+topic read ffw/woe/tts/music/#
+topic write ffw/woe/tts/music/status
+topic write ffw/woe/tts/music/heartbeat
