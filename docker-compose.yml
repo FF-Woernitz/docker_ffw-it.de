@@ -13,6 +13,7 @@ volumes:
   mqtt_data:
   node-red_data:
   hedgedoc-data:
+  vaultwarden-data:
 
 services:
   traefik:
@@ -195,6 +196,45 @@ services:
       - "traefik.http.routers.pad.tls=true"
     depends_on:
       - db
+
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest-alpine
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cp -Rf /tmp/overwrite/* /
+        /start.sh
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      - PASSWORD_ITERATIONS=500000
+      - SIGNUPS_ALLOWED=false
+      - PUSH_ENABLED=true
+      - PUSH_INSTALLATION_ID=00962a8f-48fe-4cb5-9b49-b26e0125b452
+      - PUSH_RELAY_URI=https://api.bitwarden.eu
+      - PUSH_IDENTITY_URI=https://identity.bitwarden.eu
+      - SHOW_PASSWORD_HINT=false
+      - EXTENDED_LOGGING=true
+      - SMTP_HOST=mail.tobsa.wtf
+      - SMTP_FROM=vault@ffw-it.de
+      - SMTP_PORT=587
+      - SMTP_SECURITY=starttls
+      - SMTP_USERNAME=vault@ffw-it.de
+      - DOMAIN=https://vault.ffw-it.de
+    env_file:
+      - vaultwarden.env
+    volumes:
+      - vaultwarden-data:/data
+      - "./vaultwarden-overwrite:/tmp/overwrite"
+    networks:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault.rule=Host(`vault.ffw-it.de`)"
+      - "traefik.http.routers.vault.entrypoints=websecure"
+      - "traefik.http.routers.vault.tls=true"
 
 ######### Not in use yet
 #  web-public:

@@ -2,7 +2,7 @@
 .iml
 
 /.env
-/hedgedoc.env
+/*.env
 
 /mqtt-config/listener_*/passwd
 /traefik/authorized-users
