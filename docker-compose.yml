@@ -76,8 +76,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.pma.rule=Host(`pma.vpn.ffw-it.de`)"
       - "traefik.http.routers.pma.entrypoints=websecure"
-      - "traefik.http.routers.pma.middlewares=vpn-whitelist@file"
-      - "traefik.http.routers.pma.middlewares=authorized-users@file"
+      - "traefik.http.routers.pma.middlewares=vpn-whitelist@file,authorized-users@file"
       - "traefik.http.routers.pma.tls=true"
 
   mqtt:
@@ -122,10 +121,9 @@ services:
     user: node-red
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.node-red.rule=Host(`flow.ffw-it.de`) || Host(`flow.vpn.ffw-it.de`)"
+      - "traefik.http.routers.node-red.rule=Host(`flow.vpn.ffw-it.de`)"
       - "traefik.http.routers.node-red.entrypoints=websecure"
-      - "traefik.http.routers.node-red.middlewares=vpn-whitelist@file"
-      - "traefik.http.routers.node-red.middlewares=authorized-users@file"
+      - "traefik.http.routers.node-red.middlewares=vpn-whitelist@file,authorized-users@file"
       - "traefik.http.routers.node-red.tls=true"
       - "traefik.http.services.node-red.loadbalancer.server.port=1880"
 
