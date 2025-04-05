@@ -14,6 +14,7 @@ volumes:
   node-red_data:
   hedgedoc-data:
   vaultwarden-data:
+  rustdesk-data:
 
 services:
   traefik:
@@ -234,6 +235,40 @@ services:
       - "traefik.http.routers.vault.rule=Host(`vault.ffw-it.de`)"
       - "traefik.http.routers.vault.entrypoints=websecure"
       - "traefik.http.routers.vault.tls=true"
+
+  rustdesk-relay:
+    container_name: rustdesk-relay
+    image: rustdesk/rustdesk-server:latest
+    command: hbbr
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - "10.14.0.5:21117:21117"
+    volumes:
+      - rustdesk-data:/root
+
+  rustdesk-signal:
+    container_name: rustdesk-signal
+    image: rustdesk/rustdesk-server:latest
+    command: hbbs
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - "10.14.0.5:21114:21114"
+      - "10.14.0.5:21115:21115"
+      - "10.14.0.5:21116:21116"
+      - "10.14.0.5:21116:21116/udp"
+    volumes:
+      - rustdesk-data:/root
+    depends_on:
+      - rustdesk-relay
+
 
 ######### Not in use yet
 #  web-public:
