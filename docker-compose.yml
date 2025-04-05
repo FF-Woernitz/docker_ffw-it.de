@@ -217,6 +217,7 @@ services:
       - EXTENDED_LOGGING=true
       - SMTP_HOST=mail.tobsa.wtf
       - SMTP_FROM=vault@ffw-it.de
+      - SMTP_FROM_NAME=Vaultwarden by FFW-IT.de
       - SMTP_PORT=587
       - SMTP_SECURITY=starttls
       - SMTP_USERNAME=vault@ffw-it.de
