@@ -12,3 +12,6 @@ topic write ffw/woe/tts/radio/heartbeat
 topic read ffw/woe/tts/music/#
 topic write ffw/woe/tts/music/status
 topic write ffw/woe/tts/music/heartbeat
+
+user bridge_mzf
+topic readwrite ffw/woe/mzf/#
