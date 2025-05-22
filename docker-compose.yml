@@ -15,6 +15,7 @@ volumes:
   hedgedoc-data:
   vaultwarden-data:
   rustdesk-data:
+  owntracks-data:
 
 services:
   traefik:
@@ -269,6 +270,41 @@ services:
     depends_on:
       - rustdesk-relay
 
+  owntracks-recorder:
+    container_name: owntracks-recorder
+    image: owntracks/recorder
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+      OTR_HOST: mqtt
+      OTR_CLIENTID: owntracks_recorder
+      OTR_LMDBSIZE: 10485760
+    volumes:
+      - owntracks-data:/store
+    depends_on:
+      - mqtt
+
+  owntracks-frontend:
+    container_name: owntracks-frontend
+    image: owntracks/frontend
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+      SERVER_HOST: owntracks-recorder
+      SERVER_PORT: 8083
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.owntracks-frontend.rule=Host(`owntracks.vpn.ffw-it.de`)"
+      - "traefik.http.routers.owntracks-frontend.entrypoints=websecure"
+      - "traefik.http.routers.owntracks-frontend.middlewares=vpn-whitelist@file,authorized-users@file"
+      - "traefik.http.routers.owntracks-frontend.tls=true"
+      - "traefik.http.services.owntracks-frontend.loadbalancer.server.port=80"
+    depends_on:
+      - owntracks-recorder
 
 ######### Not in use yet
 #  web-public:
