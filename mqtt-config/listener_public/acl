@@ -33,3 +33,7 @@ topic write ffw/woe/monitor/3/status
 user ffw-woe-monitor-3-web
 topic read ffw/woe/monitor/3-web/#
 topic write ffw/woe/monitor/3-web/heartbeat
+
+user tablets-owntracks
+topic read owntracks/#
+topic readwrite owntracks/tablets/#

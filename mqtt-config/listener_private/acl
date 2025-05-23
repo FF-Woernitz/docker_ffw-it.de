@@ -15,3 +15,7 @@ topic write ffw/woe/tts/music/heartbeat
 
 user bridge_mzf
 topic readwrite ffw/woe/mzf/#
+
+user mzf-owntracks
+topic read owntracks/#
+topic readwrite owntracks/vehicles/mzf_11-1/#
