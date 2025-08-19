@@ -9,3 +9,7 @@ http:
     authorized-users:
       basicAuth:
         usersFile: "/authorized-users"
+
+    authorized-owntrack-users:
+      basicAuth:
+        usersFile: "/authorized-owntrack-users"
