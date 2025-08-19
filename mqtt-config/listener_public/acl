@@ -34,6 +34,11 @@ user ffw-woe-monitor-3-web
 topic read ffw/woe/monitor/3-web/#
 topic write ffw/woe/monitor/3-web/heartbeat
 
+user ffw-woe-monitor-test-web
+topic read ffw/woe/monitor/test-web/#
+topic read ffw/woe/monitor/test-web/marker/#
+topic write ffw/woe/monitor/test-web/heartbeat
+
 user tablets-owntracks
 topic read owntracks/#
 topic readwrite owntracks/tablets/#
