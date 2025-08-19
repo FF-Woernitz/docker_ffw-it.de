@@ -16,6 +16,9 @@ volumes:
   vaultwarden-data:
   rustdesk-data:
   owntracks-data:
+  influxdb-config:
+  influxdb-data:
+  grafana-data:
 
 services:
   traefik:
@@ -305,6 +308,42 @@ services:
       - "traefik.http.services.owntracks-frontend.loadbalancer.server.port=80"
     depends_on:
       - owntracks-recorder
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb:2-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes:
+      - influxdb-config:/etc/influxdb2
+      - influxdb-data:/var/lib/influxdb2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.influxdb.rule=Host(`influxdb.vpn.ffw-it.de`)"
+      - "traefik.http.routers.influxdb.entrypoints=websecure"
+      - "traefik.http.routers.influxdb.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.influxdb.tls=true"
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_SERVER_DOMAIN: grafana.vpn.ffw-it.de
+      TZ: Europe/Berlin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.vpn.ffw-it.de`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
 ######### Not in use yet
 #  web-public:
