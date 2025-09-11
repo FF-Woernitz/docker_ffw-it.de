@@ -44,6 +44,8 @@ services:
       - "./traefik/dynamic:/etc/traefik/dynamic:ro"
       - "traefik-certs-data:/etc/traefik/certs"
       - "./traefik/authorized-users:/authorized-users:ro"
+    labels:
+      - "com.centurylinklabs.watchtower.monitor-only=true"
 
   watchtower:
     container_name: watchtower
@@ -51,8 +53,8 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Europe/Berlin
-      - WATCHTOWER_MONITOR_ONLY=true
       - WATCHTOWER_NOTIFICATION_URL=${WATCHTOWER_NOTIFICATION_URL}
+      - WATCHTOWER_CLEANUP=true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
@@ -67,6 +69,8 @@ services:
       TZ: Europe/Berlin
     volumes:
       - "mariadb:/var/lib/mysql"
+    labels:
+      - "com.centurylinklabs.watchtower.monitor-only=true"
 
   phpmyadmin:
     container_name: phpmyadmin
@@ -112,6 +116,8 @@ services:
       - "traefik.tcp.routers.mqtt-public-ws.service=mqtt-public-ws"
       - "traefik.tcp.services.mqtt-public-ws.loadbalancer.server.port=8884"
 
+      - "com.centurylinklabs.watchtower.monitor-only=true"
+
   node-red:
     container_name: node-red
     image: nodered/node-red
@@ -135,6 +141,8 @@ services:
       - "traefik.http.routers.node-red.tls=true"
       - "traefik.http.services.node-red.loadbalancer.server.port=1880"
 
+      - "com.centurylinklabs.watchtower.monitor-only=true"
+
   nextcloud_divera_bridge:
     container_name: nextcloud_divera_bridge
     image: ghcr.io/ff-woernitz/nextcloud_divera_bridge:master
@@ -149,6 +157,8 @@ services:
       - "traefik.http.routers.nc-divera-bridge.entrypoints=websecure"
       - "traefik.http.routers.nc-divera-bridge.tls=true"
       - "traefik.http.services.nc-divera-bridge.loadbalancer.server.port=80"
+
+      - "com.centurylinklabs.watchtower.monitor-only=true"
 
   collabora:
     container_name: collabora
