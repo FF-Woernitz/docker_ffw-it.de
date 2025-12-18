@@ -34,6 +34,19 @@ entryPoints:
     http:
       tls: true
 
+  websecureInsecureEncoding:
+    address: :4430
+    http:
+      tls: true
+      encodedCharacters:
+        allowEncodedSlash: true
+        allowEncodedQuestionMark: true
+        # allowEncodedBackSlash: true
+        # allowEncodedNullCharacter: true
+        # allowEncodedSemicolon: true
+        # allowEncodedPercent: true
+        # allowEncodedHash: true
+
   mqtt-public:
     address: :8883
 
