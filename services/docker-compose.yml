@@ -209,7 +209,7 @@ services:
       - CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR=email
       - CMD_ALLOW_FREEURL=true
     env_file:
-      - hedgedoc.env
+      - env/hedgedoc.env
     volumes:
       - hedgedoc-data:/hedgedoc/public/uploads
     networks:
@@ -250,7 +250,7 @@ services:
       - SMTP_USERNAME=vault@ffw-it.de
       - DOMAIN=https://vault.ffw-it.de
     env_file:
-      - vaultwarden.env
+      - env/vaultwarden.env
     volumes:
       - vaultwarden-data:/data
       - "./vaultwarden-overwrite:/tmp/overwrite"

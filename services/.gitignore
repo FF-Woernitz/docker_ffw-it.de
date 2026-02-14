@@ -1,5 +1,6 @@
 /.env
 /*.env
+env/*.env
 
 /mqtt-config/listener_*/passwd
 /traefik/authorized-users
