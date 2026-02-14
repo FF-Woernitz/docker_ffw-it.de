@@ -1,6 +1,6 @@
 http:
   middlewares:
-    sso:
+    sso-auth:
       forwardAuth:
         address: http://auth_server:9000/outpost.goauthentik.io/auth/traefik
         trustForwardHeader: true
