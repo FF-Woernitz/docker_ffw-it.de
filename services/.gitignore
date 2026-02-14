@@ -1,0 +1,8 @@
+/.env
+/*.env
+
+/mqtt-config/listener_*/passwd
+/traefik/authorized-users
+/traefik/authorized-owntrack-users
+
+backups/*.backup
