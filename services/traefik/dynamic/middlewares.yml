@@ -6,10 +6,6 @@ http:
           - "10.99.0.0/16"
           - "10.0.0.0/12"
 
-    authorized-users:
-      basicAuth:
-        usersFile: "/authorized-users"
-
     authorized-owntrack-users:
       basicAuth:
         usersFile: "/authorized-owntrack-users"
