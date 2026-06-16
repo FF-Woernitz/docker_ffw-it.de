@@ -4,5 +4,3 @@
 backups/*.backup
 
 authentik/certs/*
-authentik/data/*
-authentik/templates/*
