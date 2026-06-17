@@ -104,7 +104,7 @@ services:
     environment:
       TZ: Europe/Berlin
     ports:
-      - "10.14.0.5:1884:1884"
+      - "10.2.254.3:1884:1884"
     volumes:
       - ./mqtt-config:/mosquitto/config
       - mqtt_data:/mosquitto/data
@@ -277,7 +277,7 @@ services:
     environment:
       TZ: Europe/Berlin
     ports:
-      - "10.14.0.5:21117:21117"
+      - "10.2.254.3:21117:21117"
     volumes:
       - rustdesk-data:/root
 
@@ -291,10 +291,10 @@ services:
     environment:
       TZ: Europe/Berlin
     ports:
-      - "10.14.0.5:21114:21114"
-      - "10.14.0.5:21115:21115"
-      - "10.14.0.5:21116:21116"
-      - "10.14.0.5:21116:21116/udp"
+      - "10.2.254.3:21114:21114"
+      - "10.2.254.3:21115:21115"
+      - "10.2.254.3:21116:21116"
+      - "10.2.254.3:21116:21116/udp"
     volumes:
       - rustdesk-data:/root
     depends_on:
