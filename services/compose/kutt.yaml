@@ -1,0 +1,38 @@
+volumes:
+  kutt_data:
+
+services:
+  kutt:
+    container_name: kutt
+    image: kutt/kutt
+    restart: unless-stopped
+    networks:
+      - backend
+    env_file:
+      - kutt.env
+    environment:
+      DB_CLIENT: mysql2
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: kutt
+      DEFAULT_DOMAIN: l.ffw-it.de
+      DISALLOW_REGISTRATION: true
+      DISALLOW_LOGIN_FORM: true
+      DISALLOW_ANONYMOUS_LINKS: true
+      TRUST_PROXY: true
+      MAIL_ENABLED: false
+      OIDC_ENABLED: true
+      OIDC_ISSUER: https://auth.ffw-it.de/application/o/kutt/
+      OIDC_SCOPE: openid profile email
+      OIDC_EMAIL_CLAIM: email
+      OIDC_BUTTON_TEXT: Login with auth.ffw-it.de
+    volumes:
+      - kutt_data:/kutt/custom
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kutt.rule=Host(`l.ffw-it.de`)"
+      - "traefik.http.routers.kutt.entrypoints=websecure"
+      - "traefik.http.routers.kutt.tls=true"
+      - "traefik.http.services.kutt.loadbalancer.server.port=3000"
+    depends_on:
+      - db
