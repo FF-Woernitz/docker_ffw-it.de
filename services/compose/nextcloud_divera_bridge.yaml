@@ -1,0 +1,17 @@
+services:
+  nextcloud_divera_bridge:
+    container_name: nextcloud_divera_bridge
+    image: ghcr.io/ff-woernitz/nextcloud_divera_bridge:master
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nc-divera-bridge.rule=Host(`nc-divera-bridge.ffw-it.de`)"
+      - "traefik.http.routers.nc-divera-bridge.entrypoints=websecure"
+      - "traefik.http.routers.nc-divera-bridge.tls=true"
+      - "traefik.http.services.nc-divera-bridge.loadbalancer.server.port=80"
+
+      - "com.centurylinklabs.watchtower.monitor-only=true"

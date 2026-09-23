@@ -1,0 +1,16 @@
+services:
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      PMA_HOST: db
+      TZ: Europe/Berlin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pma.rule=Host(`pma.vpn.ffw-it.de`)"
+      - "traefik.http.routers.pma.entrypoints=websecure"
+      - "traefik.http.routers.pma.middlewares=vpn-whitelist@file,sso-auth@file"
+      - "traefik.http.routers.pma.tls=true"

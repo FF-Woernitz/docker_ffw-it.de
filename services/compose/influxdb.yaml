@@ -1,0 +1,21 @@
+volumes:
+  influxdb-config:
+  influxdb-data:
+
+services:
+  influxdb:
+    container_name: influxdb
+    image: influxdb:2-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes:
+      - influxdb-config:/etc/influxdb2
+      - influxdb-data:/var/lib/influxdb2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.influxdb.rule=Host(`influxdb.vpn.ffw-it.de`)"
+      - "traefik.http.routers.influxdb.entrypoints=websecure"
+      - "traefik.http.routers.influxdb.middlewares=vpn-whitelist@file"
+      - "traefik.http.routers.influxdb.tls=true"
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"

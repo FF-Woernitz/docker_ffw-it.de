@@ -1,0 +1,37 @@
+volumes:
+  rustdesk-data:
+
+services:
+  rustdesk-relay:
+    container_name: rustdesk-relay
+    image: rustdesk/rustdesk-server:latest
+    command: hbbr
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - "10.2.254.3:21117:21117"
+    volumes:
+      - rustdesk-data:/root
+
+  rustdesk-signal:
+    container_name: rustdesk-signal
+    image: rustdesk/rustdesk-server:latest
+    command: hbbs
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - "10.2.254.3:21114:21114"
+      - "10.2.254.3:21115:21115"
+      - "10.2.254.3:21116:21116"
+      - "10.2.254.3:21116:21116/udp"
+    volumes:
+      - rustdesk-data:/root
+    depends_on:
+      - rustdesk-relay
+

@@ -1,0 +1,33 @@
+volumes:
+  mqtt_data:
+
+services:
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - "10.2.254.3:1884:1884"
+    volumes:
+      - ./mqtt-config:/mosquitto/config
+      - mqtt_data:/mosquitto/data
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.tcp.routers.mqtt-public.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mqtt-public.entrypoints=mqtt-public"
+      - "traefik.tcp.routers.mqtt-public.tls=true"
+      - "traefik.tcp.routers.mqtt-public.service=mqtt-public"
+      - "traefik.tcp.services.mqtt-public.loadbalancer.server.port=8883"
+
+      - "traefik.tcp.routers.mqtt-public-ws.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mqtt-public-ws.entrypoints=mqtt-public-ws"
+      - "traefik.tcp.routers.mqtt-public-ws.tls=true"
+      - "traefik.tcp.routers.mqtt-public-ws.service=mqtt-public-ws"
+      - "traefik.tcp.services.mqtt-public-ws.loadbalancer.server.port=8884"
+
+      - "com.centurylinklabs.watchtower.monitor-only=true"

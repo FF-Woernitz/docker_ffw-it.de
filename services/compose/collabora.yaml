@@ -1,0 +1,17 @@
+services:
+  collabora:
+    container_name: collabora
+    image: collabora/code
+    environment:
+      - aliasgroup1=https://cloud.ffw-it.de
+      - "extra_params=--o:ssl.enable=false --o:ssl.termination=true --o:logging.disable_server_audit=true"
+      - TZ=Europe/Berlin
+    restart: unless-stopped
+    networks:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.collabora.rule=Host(`collabora.ffw-it.de`)"
+      - "traefik.http.routers.collabora.entrypoints=websecureInsecureEncoding"
+      - "traefik.http.routers.collabora.tls=true"
+      - "traefik.http.services.collabora.loadbalancer.server.port=9980"

@@ -1,0 +1,41 @@
+volumes:
+  hedgedoc-data:
+
+services:
+  hedgedoc:
+    container_name: hedgedoc
+    image: quay.io/hedgedoc/hedgedoc:alpine
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      - CMD_DB_URL=mysql://hedgedoc:hedgedoc@db:3306/hedgedoc
+      - CMD_DOMAIN=pad.ffw-it.de
+      - CMD_PROTOCOL_USESSL=true
+      - CMD_URL_ADDPORT=false
+      - CMD_ALLOW_ANONYMOUS=false
+      - CMD_ALLOW_ANONYMOUS_EDITS=true
+      - CMD_DEFAULT_PERMISSION=private
+      - CMD_EMAIL=false
+      - CMD_ALLOW_EMAIL_REGISTER=False
+      - CMD_OAUTH2_PROVIDERNAME=auth.ffw-it.de
+      - CMD_OAUTH2_SCOPE=openid email profile
+      - CMD_OAUTH2_USER_PROFILE_URL=https://auth.ffw-it.de/application/o/userinfo/
+      - CMD_OAUTH2_TOKEN_URL=https://auth.ffw-it.de/application/o/token/
+      - CMD_OAUTH2_AUTHORIZATION_URL=https://auth.ffw-it.de/application/o/authorize/
+      - CMD_OAUTH2_USER_PROFILE_USERNAME_ATTR=preferred_username
+      - CMD_OAUTH2_USER_PROFILE_DISPLAY_NAME_ATTR=name
+      - CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR=email
+      - CMD_ALLOW_FREEURL=true
+    env_file:
+      - env/hedgedoc.env
+    volumes:
+      - hedgedoc-data:/hedgedoc/public/uploads
+    networks:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pad.rule=Host(`pad.ffw-it.de`)"
+      - "traefik.http.routers.pad.entrypoints=websecure"
+      - "traefik.http.routers.pad.tls=true"
+    depends_on:
+      - db

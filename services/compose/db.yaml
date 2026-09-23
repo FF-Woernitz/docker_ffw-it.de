@@ -1,0 +1,17 @@
+volumes:
+  mariadb:
+
+services:
+  db:
+    container_name: db
+    image: 'mariadb:10'
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+      TZ: Europe/Berlin
+    volumes:
+      - "mariadb:/var/lib/mysql"
+    labels:
+      - "com.centurylinklabs.watchtower.monitor-only=true"

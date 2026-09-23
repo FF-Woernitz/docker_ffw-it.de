@@ -1,0 +1,11 @@
+services:
+  watchtower:
+    container_name: watchtower
+    image: nickfedor/watchtower
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      - WATCHTOWER_NOTIFICATION_URL=${WATCHTOWER_NOTIFICATION_URL}
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
