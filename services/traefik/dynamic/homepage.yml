@@ -4,11 +4,15 @@ http:
       redirectRegex:
         regex: "(.)*"
         replacement: "https://ff-woernitz.de"
+    redirect-github:
+      redirectRegex:
+        regex: "(.)*"
+        replacement: "https://github.com/FF-Woernitz"
   routers:
     router-homepage-1:
       rule: "Host(`ffw-it.de`)"
       entrypoints: websecure
-      middlewares: redirect-homepage@file
+      middlewares: redirect-github@file
       tls: true
       service: "noop@internal"
     router-homepage-2:
