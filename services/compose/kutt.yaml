@@ -9,7 +9,7 @@ services:
     networks:
       - backend
     env_file:
-      - kutt.env
+      - env/kutt.env
     environment:
       DB_CLIENT: mysql2
       DB_HOST: db
