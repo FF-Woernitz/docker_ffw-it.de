@@ -41,16 +41,3 @@ networks:
   auth:
     name: auth_public
     external: true
-
-
-volumes:
-  mariadb:
-  traefik-certs-data:
-  mqtt_data:
-  node-red_data:
-  hedgedoc-data:
-  vaultwarden-data:
-  rustdesk-data:
-  influxdb-config:
-  influxdb-data:
-  grafana-data:
