@@ -16,8 +16,11 @@ services:
       - TZ=Europe/Berlin
       - WATCHTOWER_NOTIFICATION_URL=${WATCHTOWER_NOTIFICATION_URL:?Watchtower url required}
       - WATCHTOWER_MONITOR_ONLY=true
+      - WATCHTOWER_SCOPE=auth
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "com.centurylinklabs.watchtower.scope=auth"
 
   postgresql:
     container_name: auth_postgresql
@@ -39,6 +42,8 @@ services:
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    labels:
+      - "com.centurylinklabs.watchtower.scope=auth"
 
   server:
     container_name: auth_server
@@ -68,6 +73,7 @@ services:
       - "traefik.http.routers.auth.tls=true"
       - "traefik.http.routers.auth.service=auth"
       - "traefik.http.services.auth.loadbalancer.server.url=http://auth_server:9000"
+      - "com.centurylinklabs.watchtower.scope=auth"
 
   worker:
     container_name: auth_worker
@@ -89,3 +95,5 @@ services:
       - ./authentik/data:/data
       - ./authentik/certs:/certs
       - ./authentik/templates:/templates
+    labels:
+      - "com.centurylinklabs.watchtower.scope=auth"
