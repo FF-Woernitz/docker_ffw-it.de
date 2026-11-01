@@ -7,5 +7,6 @@ services:
       - TZ=Europe/Berlin
       - WATCHTOWER_NOTIFICATION_URL=${WATCHTOWER_NOTIFICATION_URL}
       - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCOPE=none
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"

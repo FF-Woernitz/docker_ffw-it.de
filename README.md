@@ -30,8 +30,8 @@ Das Repo besteht aus zwei unabhängigen Compose-Stacks:
 - **Traefik** läuft im `services`-Stack und ist der einzige Container mit öffentlichen Ports. Die Routen werden per
   Docker-Labels an den Containern definiert, statische Routen und Middlewares liegen in [
   `services/traefik/dynamic/`](services/traefik/dynamic).
-- **Zertifikate**: Ein Wildcard-Zertifikat für `ffw-it.de`, `*.ffw-it.de`, `*.vpn.ffw-it.de` und `xn--ff-wrnitz-37a.de`
-  wird per DNS-Challenge bei Hetzner geholt (siehe [`ssl.yml`](services/traefik/dynamic/ssl.yml)).
+- **Zertifikate**: Ein Wildcard-Zertifikat für `ffw-it.de`, `*.ffw-it.de`, `*.vpn.ffw-it.de`, `xn--ff-wrnitz-37a.de` und
+  `*.xn--ff-wrnitz-37a.de` wird per DNS-Challenge bei Hetzner geholt (siehe [`ssl.yml`](services/traefik/dynamic/ssl.yml)).
 - **Netzwerke**:
     - `backend` (`172.20.0.0/24`): internes Netz des `services`-Stacks.
     - `auth_public`: wird vom `auth`-Stack erstellt (Netz `public` im Projekt `auth`). Traefik hängt zusätzlich in
@@ -76,7 +76,8 @@ Das Repo besteht aus zwei unabhängigen Compose-Stacks:
 | Grafana                 | [`grafana.yaml`](services/compose/grafana.yaml)                                 | `grafana.vpn.ffw-it.de`                                      | VPN + SSO             |
 | Kutt (URL-Shortener)    | [`kutt.yaml`](services/compose/kutt.yaml)                                       | `s.ffw-it.de`                                                | SSO                   |
 | Web-Public              | [`web-public.yaml`](services/compose/web-public.yaml)                           | `data.ffw-it.de` (Inhalt aus `/opt/www-public` auf dem Host) | öffentlich            |
-| Homepage-Redirect       | [`homepage.yml`](services/traefik/dynamic/homepage.yml)                         | `ffw-it.de`, `xn--ff-wrnitz-37a.de` → `ff-woernitz.de`       | öffentlich            |
+| Homepage-Redirect       | [`homepage.yml`](services/traefik/dynamic/homepage.yml)                         | `ffw-it.de` → GitHub `FF-Woernitz`                           | öffentlich            |
+| Homepage-Redirect       | ″                                                                               | `xn--ff-wrnitz-37a.de` → `ff-woernitz.de`                    | öffentlich            |
 
 Die Grafana-Rollen kommen aus den authentik-Gruppen: `Admin` wird Admin, `IT` wird Editor, alle anderen werden Viewer.
 
@@ -149,11 +150,14 @@ Diese Dateien sind nicht im Repo und müssen zusätzlich angelegt werden:
 | `mqtt-config/listener_public/passwd`  | Mosquitto-Passwortdatei für die öffentlichen Listener (8883/8884) |
 | `mqtt-config/listener_private/passwd` | Mosquitto-Passwortdatei für den privaten Listener (1884)          |
 
-Passwörter für Mosquitto anlegen:
+Ersten Mosquitto-Benutzer je Listener anlegen (`run` statt `exec`, weil Mosquitto ohne `passwd` nicht startet):
 
 ```bash
-docker compose exec mqtt mosquitto_passwd -c /mosquitto/config/listener_public/passwd <benutzer>
+docker compose run --rm mqtt mosquitto_passwd -c /mosquitto/config/listener_public/passwd <benutzer>
+docker compose run --rm mqtt mosquitto_passwd -c /mosquitto/config/listener_private/passwd <benutzer>
 ```
+
+**Achtung:** `-c` legt die Datei neu an und löscht alle vorhandenen Benutzer. Es ist nur für den ersten Benutzer gedacht.
 
 Die Datenbanken und Benutzer für HedgeDoc (`hedgedoc`) und Kutt (`kutt`) müssen in MariaDB von Hand angelegt werden, z.
 B. über phpMyAdmin.
@@ -172,9 +176,14 @@ Mosquitto hat vier Listener mit getrennten Benutzern und ACLs (`per_listener_set
 | `8883` | Traefik (TLS), öffentlich   | `listener_public/passwd` + `acl`  |
 | `8884` | Traefik (WebSocket + TLS)   | `listener_public/passwd` + `acl`  |
 | `1884` | `10.2.254.3:1884`, privat   | `listener_private/passwd` + `acl` |
-| `1883` | nur innerhalb von `backend` | anonym (z. B. für Node-RED)       |
+| `1883` | nur innerhalb von `backend` | anonym                            |
 
-Neue MQTT-Benutzer werden in der passenden `passwd` angelegt und bekommen in der zugehörigen `acl` ihre Topics.
+Weitere MQTT-Benutzer werden ohne `-c` in der passenden `passwd` angelegt und bekommen in der zugehörigen `acl` ihre
+Topics:
+
+```bash
+docker compose exec mqtt mosquitto_passwd /mosquitto/config/listener_public/passwd <benutzer>
+```
 
 ## Updates
 
@@ -185,16 +194,19 @@ Beide Stacks haben ein `update`-Skript:
 ./auth/update
 ```
 
-Das Skript legt zuerst unter `backups/` eine Sicherung des aktuellen Zustands an (`ps`, `images`, `config`). Danach
-zieht es neue Images und fragt, ob die Container neu gestartet werden sollen.
+Das Skript speichert zuerst den aktuellen Zustand als Textprotokoll unter `backups/` (`ps`, `images`, `top`, `config`).
+Daten und Volumes werden dabei **nicht** gesichert. Danach zieht es neue Images und fragt, ob die Container neu gestartet
+werden sollen.
 
 Zusätzlich läuft in beiden Stacks Watchtower:
 
-- **services**: aktualisiert Container automatisch, außer denen mit dem Label
+- **services**: läuft mit `WATCHTOWER_SCOPE=none` und achtet nur auf Container ohne Scope-Label, neue Dienste sind also
+  automatisch abgedeckt. Er aktualisiert sie automatisch, außer denen mit dem Label
   `com.centurylinklabs.watchtower.monitor-only=true` (traefik, db, mqtt, node-red, nextcloud_divera_bridge). Für diese
   schickt er nur eine Benachrichtigung.
-- **auth**: ist grundsätzlich nur im Benachrichtigungs-Modus (`WATCHTOWER_MONITOR_ONLY=true`). authentik wird über
-  `AUTHENTIK_TAG` aktualisiert.
+- **auth**: läuft mit `WATCHTOWER_SCOPE=auth` und achtet nur auf Container mit dem Label
+  `com.centurylinklabs.watchtower.scope=auth`. Er ist grundsätzlich nur im Benachrichtigungs-Modus
+  (`WATCHTOWER_MONITOR_ONLY=true`). authentik wird über `AUTHENTIK_TAG` aktualisiert.
 
 ## Neuen Dienst hinzufügen
 
@@ -213,7 +225,7 @@ Zusätzlich läuft in beiden Stacks Watchtower:
          - backend
        environment:
          TZ: Europe/Berlin
-       env_file:
+       env_file: # entfernen, wenn der Dienst keine Secrets hat
          - env/<dienst>.env
        volumes:
          - <dienst>-data:/data
