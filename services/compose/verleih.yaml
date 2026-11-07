@@ -1,0 +1,36 @@
+volumes:
+  verleih-data:
+
+services:
+  verleih:
+    container_name: verleih
+    # built locally from FF-Woernitz/propaganda-shop and loaded with `docker load` – not in any registry
+    image: hilfsmittel-oeffentlichkeitsarbeit:e667dd2
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      TZ: Europe/Berlin
+      DATA_DIR: /data
+      PUBLIC_BASE_URL: https://verleih.xn--ff-wrnitz-37a.de  # verleih.ff-wörnitz.de
+      COOKIE_SECURE: "true"
+      ADMIN_EMAIL: technik@ff-woernitz.de
+      SMTP_HOST: secure.emailsrvr.com
+      SMTP_PORT: "465"
+      SMTP_SECURITY: ssl
+      SMTP_USER: technik@ff-woernitz.de
+      MAIL_FROM: technik@ff-woernitz.de
+      MAIL_FROM_NAME: Hilfsmittel Öffentlichkeitsarbeit
+      BACKUP_KEEP: "14"
+    env_file:
+      - env/verleih.env
+    volumes:
+      - verleih-data:/data
+    labels:
+      # nothing to pull – updates come via `docker load`, so Watchtower must leave it alone
+      - "com.centurylinklabs.watchtower.enable=false"
+      - "traefik.enable=true"
+      - "traefik.http.routers.verleih.rule=Host(`verleih.xn--ff-wrnitz-37a.de`)"  # verleih.ff-wörnitz.de
+      - "traefik.http.routers.verleih.entrypoints=websecure"
+      - "traefik.http.routers.verleih.tls=true"
+      - "traefik.http.services.verleih.loadbalancer.server.port=8000"

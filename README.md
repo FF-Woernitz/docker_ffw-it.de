@@ -32,6 +32,8 @@ Das Repo besteht aus zwei unabhängigen Compose-Stacks:
   `services/traefik/dynamic/`](services/traefik/dynamic).
 - **Zertifikate**: Ein Wildcard-Zertifikat für `ffw-it.de`, `*.ffw-it.de`, `*.vpn.ffw-it.de`, `xn--ff-wrnitz-37a.de` und
   `*.xn--ff-wrnitz-37a.de` wird per DNS-Challenge bei Hetzner geholt (siehe [`ssl.yml`](services/traefik/dynamic/ssl.yml)).
+  `ff-woernitz.de` (ohne Umlaut) liegt bei Jimdo und lässt sich hier nicht nutzen; Dienste unter dem Vereinsnamen laufen
+  deshalb unter `*.ff-wörnitz.de` (`*.xn--ff-wrnitz-37a.de`, DNS-Wildcard bei Hetzner).
 - **Netzwerke**:
     - `backend` (`172.20.0.0/24`): internes Netz des `services`-Stacks.
     - `auth_public`: wird vom `auth`-Stack erstellt (Netz `public` im Projekt `auth`). Traefik hängt zusätzlich in
@@ -76,6 +78,7 @@ Das Repo besteht aus zwei unabhängigen Compose-Stacks:
 | Grafana                 | [`grafana.yaml`](services/compose/grafana.yaml)                                 | `grafana.vpn.ffw-it.de`                                      | VPN + SSO             |
 | Kutt (URL-Shortener)    | [`kutt.yaml`](services/compose/kutt.yaml)                                       | `s.ffw-it.de`                                                | SSO                   |
 | Web-Public              | [`web-public.yaml`](services/compose/web-public.yaml)                           | `data.ffw-it.de` (Inhalt aus `/opt/www-public` auf dem Host) | öffentlich            |
+| Verleih                 | [`verleih.yaml`](services/compose/verleih.yaml)                                 | `verleih.ff-wörnitz.de`                                      | öffentlich            |
 | Homepage-Redirect       | [`homepage.yml`](services/traefik/dynamic/homepage.yml)                         | `ffw-it.de` → GitHub `FF-Woernitz`                           | öffentlich            |
 | Homepage-Redirect       | ″                                                                               | `xn--ff-wrnitz-37a.de` → `ff-woernitz.de`                    | öffentlich            |
 
@@ -204,6 +207,9 @@ Zusätzlich läuft in beiden Stacks Watchtower:
   automatisch abgedeckt. Er aktualisiert sie automatisch, außer denen mit dem Label
   `com.centurylinklabs.watchtower.monitor-only=true` (traefik, db, mqtt, node-red, nextcloud_divera_bridge). Für diese
   schickt er nur eine Benachrichtigung.
+- **verleih** ist mit `com.centurylinklabs.watchtower.enable=false` ausgenommen: Das Image wird lokal aus
+  [FF-Woernitz/propaganda-shop](https://github.com/FF-Woernitz/propaganda-shop) gebaut und per `docker load` auf den
+  Server gebracht. Update: neues Image laden, Tag in `verleih.yaml` anpassen, `docker compose up -d verleih`.
 - **auth**: läuft mit `WATCHTOWER_SCOPE=auth` und achtet nur auf Container mit dem Label
   `com.centurylinklabs.watchtower.scope=auth`. Er ist grundsätzlich nur im Benachrichtigungs-Modus
   (`WATCHTOWER_MONITOR_ONLY=true`). authentik wird über `AUTHENTIK_TAG` aktualisiert.
